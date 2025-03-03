@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# 项目需忽略文件
+.idea/
+running/
+source/
+output/
+db/
 # C extensions
 *.so
 
