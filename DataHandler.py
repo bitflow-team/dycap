@@ -24,21 +24,21 @@ class DyHandler(Handler):
                     requestId = params['requestId']
                     response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
                     body_data = response_body["body"]
-                    for di in json.loads(body_data)["followers"]:
+                    for i in json.loads(body_data)["followers"]:
                         is_biz_account = False
-                        if di['account_cert_info'] is None:
+                        if i['account_cert_info'] is None:
                             is_biz_account = True
                         # user_info = [i['nickname'], i['uid'], i['signature'], "https://www.douyin.com/user/" + i['sec_uid'],
                         #              i['unique_id'], is_biz_account, i['follower_count'], i['following_count']]
 
-                        user_info = {"nickname": di['nickname'],
-                                     "uid": di['uid'],
-                                     "signature": di['signature'],
-                                     "sec_uid": "https://www.douyin.com/user/" + di['sec_uid'],
-                                     "unique_id": di['unique_id'],
+                        user_info = {"nickname": i['nickname'],
+                                     "uid": i['uid'],
+                                     "signature": i['signature'],
+                                     "sec_uid": "https://www.douyin.com/user/" + i['sec_uid'],
+                                     "unique_id": i['unique_id'],
                                      "is_biz_account": is_biz_account,
-                                     "follower_count": di['follower_count'],
-                                     "following_count": di['following_count'],
+                                     "follower_count": i['follower_count'],
+                                     "following_count": i['following_count'],
                                      }
                         fans_list.append(user_info)
 
@@ -47,21 +47,21 @@ class DyHandler(Handler):
                     requestId = params['requestId']
                     response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
                     body_data = response_body["body"]
-                    for di in json.loads(body_data)["followings"]:
+                    for i in json.loads(body_data)["followings"]:
                         is_biz_account = False
-                        if di['account_cert_info'] is None:
+                        if i['account_cert_info'] is None:
                             is_biz_account = True
                         # user_info = [i['nickname'], i['uid'], i['signature'], "https://www.douyin.com/user/" + i['sec_uid'],
                         #              i['unique_id'], is_biz_account, i['follower_count'], i['following_count']]
                         # pprint(user_info)
-                        user_info = {"nickname": di['nickname'],
-                                     "uid": di['uid'],
-                                     "signature": di['signature'],
-                                     "sec_uid": "https://www.douyin.com/user/" + di['sec_uid'],
-                                     "unique_id": di['unique_id'],
+                        user_info = {"nickname": i['nickname'],
+                                     "uid": i['uid'],
+                                     "signature": i['signature'],
+                                     "sec_uid": "https://www.douyin.com/user/" + i['sec_uid'],
+                                     "unique_id": i['unique_id'],
                                      "is_biz_account": is_biz_account,
-                                     "follower_count": di['follower_count'],
-                                     "following_count": di['following_count'],
+                                     "follower_count": i['follower_count'],
+                                     "following_count": i['following_count'],
                                      }
                         fans_list.append(user_info)
         if fans_list:

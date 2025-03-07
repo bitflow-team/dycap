@@ -59,11 +59,11 @@ SELENIUM_CONFIG = {
         r'--no-sandbox',
         r'--disable-extensions',
         r'--disable-3d-apis',
+        # r'--headless',
+        # r'start-maximized',
+        # r'disable-infobars',
+        # r'--disable-background-network-ingestion',
+        # r'--disable-background-networking'
     ],
     "log_output": SOURCE_DIR/'chromedriver.log'
 }
-# r'--headless',
-# r'start-maximized',
-# r'disable-infobars',
-# r'--disable-background-network-ingestion',
-# r'--disable-background-networking'
