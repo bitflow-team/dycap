@@ -11,7 +11,7 @@ import config, time
 errors = [NoSuchElementException, ElementNotInteractableException]
 
 
-class Crawler:
+class _Crawler:
     def __init__(self):
         # 配置
         self._option = webdriver.ChromeOptions()
@@ -28,7 +28,7 @@ class Crawler:
         return webdriver.Chrome(options=self._option, service=self._service)
 
 
-class Dy(Crawler):
+class Dy(_Crawler):
     def __init__(self):
         super().__init__()
         self.cap_data_count = None
