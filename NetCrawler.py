@@ -24,13 +24,13 @@ class _Crawler:
         self._option.binary_location = config.CHROME_.as_posix()
         self._service.path = config.CHROMEDRIVER_.as_posix()
 
-    def setup(self):
+    def _setup(self):
         return webdriver.Chrome(options=self._option, service=self._service)
 
 
 class Dy(_Crawler):
     def __init__(self):
-        super().__init__()
+        super(_Crawler,self).__init__()
         self.cap_data_count = None
         self.pub_sleep_time = 2
         self.log = []
@@ -38,7 +38,7 @@ class Dy(_Crawler):
         self.user_status_dict = {}
 
     def setup(self):
-        return super().setup()
+        return super()._setup()
 
     # get fans log
     def fans_activation(self, driver, url):
@@ -103,8 +103,10 @@ class Dy(_Crawler):
                 c += 1
 
 
-# dy = Dy()
-# driver = dy.setup()
-# log = dy.fans_activation(driver=driver,url='https://www.douyin.com/user/MS4wLjABAAAAYmAOlqtM67sXnoOb5FfloEtW_sHcrpoy6a9ydyt9iYHFxvEzrRBY7s6_C0KUyXmp')
-# # log = dy.fans_activation(driver, 'https://www.douyin.com/user/self?from_tab_name=main')
-# print(log)
+if __name__ == "__main__":
+    dy = Dy()
+    driver = dy.setup()
+    log = dy.fans_activation(driver=driver,
+                             url='https://www.douyin.com/user/MS4wLjABAAAAYmAOlqtM67sXnoOb5FfloEtW_sHcrpoy6a9ydyt9iYHFxvEzrRBY7s6_C0KUyXmp')
+    # log = dy.fans_activation(driver, 'https://www.douyin.com/user/self?from_tab_name=main')
+    print(log)
