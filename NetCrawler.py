@@ -1,12 +1,13 @@
 # TODO 网络测试 数据 从网络到内存
-from pprint import pprint
 
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common import *
-import config, time
+from time import sleep as sp
+from DataIo import Txt
+import config, json
 
 errors = [NoSuchElementException, ElementNotInteractableException]
 
@@ -28,85 +29,103 @@ class _Crawler:
         return webdriver.Chrome(options=self._option, service=self._service)
 
 
-class Dy(_Crawler):
-    def __init__(self):
-        super(_Crawler,self).__init__()
-        self.cap_data_count = None
-        self.pub_sleep_time = 2
-        self.log = []
-        self.user_status = True
-        self.user_status_dict = {}
+class DyCrawler(_Crawler):
+    def __init__(self,ti=2):
+        super(DyCrawler,self).__init__()
+        self.urls = Txt().get_urls()
+        """获取待采集url"""
+        self.keys = Txt().get_keys()
+        # 获取关键词
+        self._ti = ti
+        '''设置暂停时间'''
+        self._option.add_experimental_option("detach", True)
+        self._option.add_argument('--headless')
 
-    def setup(self):
-        return super()._setup()
+    def _setup(self):
+        return super(DyCrawler, self)._setup()
 
-    # get fans log
-    def fans_activation(self, driver, url):
-        c = 0
-        while True:
-            driver.get(url)
-            time.sleep(self.pub_sleep_time)
-            try:
-                wait = WebDriverWait(driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
-                wait.until(lambda d: driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
-                text_box = driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq")
-                if text_box != []:
-                    for i in text_box[0:2]:
-                        # 粉丝关注数量为0，就跳过
-                        cap_data_total = int(i.text)
-                        if cap_data_total == 0:
-                            print("粉丝关注为0，跳过！")
-                            continue
-                        i.click()
+    @staticmethod
+    def _click_login(driver):
+        if (driver.find_elements(By.ID, 'RkbQLUok') or driver.find_elements(By.ID, 'b4kMZDrJ')) or driver.find_elements(
+                By.ID, 'login-panel-news'):
+            return True
+        else:
+            return False
 
-                        time.sleep(self.pub_sleep_time)
-                        if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
-                            print("关注粉丝列表为空，无法获取！")
-                            self.user_status_dict[url] = False
-                            continue
-                        self.user_status_dict[url] = True
+    @staticmethod
+    def _get_network_log(drivers, logs: [{}]):
+        fans_list = []
+        for l in logs:
+            nw = json.loads(l.get('message')).get('message')
+            if nw.get('method') == 'Network.responseReceived':
+                params = nw['params']
+                request_url = params['response']['url']
+                if 'user/follower/list' in request_url:
+                    request_id = params['requestId']
+                    response_body = drivers.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
+                    fans_list += json.loads(response_body["body"])["followers"]
+                if 'user/following/list' in request_url:
+                    request_id = params['requestId']
+                    response_body = drivers.execute_cdp_cmd('Network.getResponseBody', {'requestId': request_id})
+                    fans_list += json.loads(response_body["body"])["followings"]
+        return fans_list
 
-                        _count = 0
-                        self.cap_data_count = 0
-                        while _count <= 1:
-                            time.sleep(self.pub_sleep_time)
-                            nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
-                            if len(nodes) == self.cap_data_count:
-                                _count += 1
-                            self.cap_data_count = len(nodes)
-                            try:
-                                ActionChains(driver).scroll_to_element(nodes[-1]).perform()
-                            except:
-                                print("超出索引,粉丝关注列表不存在")
-                                # 关闭粉丝关注弹窗面板
-                                driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
-                                break
-                            # self.log += driver.get_log('performance')
-                            # print(len(self.log))
-                        print(f"{driver.title}，跳出粉丝关注循环")
-                        driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
-                    return driver.get_log('performance')
-                else:
-                    print("粉丝关注列表为空")
-            except:
-                # TODO 检测登录弹窗
-                if driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done') != []:
-                    time.sleep(60)
-                    print("请登录！")
-                    continue
-                # TODO 反爬
-                if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
-                    driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
-                if c >= 2:
-                    return driver.get_log('performance')
-                print(f"except:第{c}次出错")
-                c += 1
+    def fans_activation(self) -> list:
+        """
+        抓取粉丝关注列表
+
+        约定入口文件：
+            待采集的主页链接：running/urls.txt
+
+            筛选关键词：running/keys.txt
+
+            完成采集的主页链接：running/complete_urls.txt
+
+        约定出口文件：
+            经关键词筛选后未采集的主页链接：output/urls.txt
+
+            输出采集结果：output/result.xlsx
+
+        :return:list
+        """
+        test_temp = []
+
+        _driver = self._setup()
+        for url in self.urls:
+            _driver.get(url)
+
+            # 检测是否登录
+            while self._click_login(_driver):
+                print('请登录')
+                sp(self._ti)
+            wait = WebDriverWait(_driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
+            wait.until(lambda d: _driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
+            box2 = [i for i in _driver.find_elements(By.CLASS_NAME, 'C1cxu0Vq')[:2] if i.text != '0']
+            for i in box2:
+                i.click()
+                if _driver.find_elements(By.ID, value="toastContainer"):
+                    print('隐私用户')
+                    break
+                # 滑动粉丝关注列表
+                sp(self._ti)
+                temp = 0
+                while temp < len(_driver.find_elements(By.CLASS_NAME, value="i5U4dMnB")):
+                    sp(self._ti - 1)
+                    try:
+                        ls = _driver.find_elements(By.CLASS_NAME, value="i5U4dMnB")
+                        ActionChains(_driver).scroll_to_element(ls[-1]).perform()
+                        print(len(ls))
+                        temp = len(ls)
+                    except:
+                        print("关注粉丝列表为空，无法获取！")
+                test_temp += self._get_network_log(_driver, _driver.get_log('performance'))
+                if _driver.find_elements(By.CLASS_NAME, value="vc-captcha-close-btn"):
+                    _driver.find_element(By.CLASS_NAME, value="vc-captcha-close-btn").click()
+                _driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
+        return test_temp
 
 
 if __name__ == "__main__":
-    dy = Dy()
-    driver = dy.setup()
-    log = dy.fans_activation(driver=driver,
-                             url='https://www.douyin.com/user/MS4wLjABAAAAYmAOlqtM67sXnoOb5FfloEtW_sHcrpoy6a9ydyt9iYHFxvEzrRBY7s6_C0KUyXmp')
-    # log = dy.fans_activation(driver, 'https://www.douyin.com/user/self?from_tab_name=main')
+    dy = DyCrawler()
+    log = dy.fans_activation()
     print(log)

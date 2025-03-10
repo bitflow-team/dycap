@@ -1,8 +1,8 @@
 # TODO 运行入口 数据 梦开始之地
 
-from test import TsetDy
-
-import fire,sys
+# from test import TsetDy
+from NetCrawler import DyCrawler
+import fire
 
 # dy = Dy()
 # driver = dy.setup()
@@ -13,4 +13,4 @@ import fire,sys
 # print(DyHandler.handler_fans(driver=driver,log=log))
 
 if __name__ == '__main__':
-    fire.Fire(TsetDy)
+    fire.Fire(DyCrawler)

@@ -15,10 +15,10 @@ def unzip_file(zip_path, extract_path):
 # chrome-linux64
 # 下载浏览器及驱动
 def get_driver_or_chrome(os_type:str, binary:str,source_dir:Path):
-    def download_file(url: str,zip_file_name): # zip_file_name: 绝对路径/**/*.zip
-        response = requests.get(url, stream=True)
+    def download_file(_url: str,zip_file_name): # zip_file_name: 绝对路径/**/*.zip
+        response = requests.get(_url, stream=True)
         if response.status_code != 200:
-            print(f"网络错误,无法下载,请手动下载:{url}")
+            print(f"网络错误,无法下载,请手动下载:{_url}")
             exit(-1)
         total_size = int(response.headers.get('content-length', 0))
         with tqdm(desc=zip_file_name.as_posix(), total=total_size, unit='iB', unit_scale=True, unit_divisor=1024) as pbar:
