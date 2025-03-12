@@ -38,7 +38,7 @@ class DyCrawler(_Crawler):
         # 获取关键词
         self._ti = ti
         '''设置暂停时间'''
-        self._option.add_experimental_option("detach", True)
+        # self._option.add_experimental_option("detach", True)
         self._option.add_argument('--headless')
 
     def _setup(self):
