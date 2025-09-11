@@ -5,19 +5,18 @@ import fire
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from NetCrawler import _Crawler, errors
 from time import sleep as sp
-from DataIo import Txt
 import json
 from multiprocessing import Queue, Process
-import random
 from queue import Empty
 
+from NetCrawler import _Crawler, errors
+from DataIo import Txt
 class _TestCrawler(_Crawler):
     def __init__(self):
         super(_TestCrawler, self).__init__()
-        # self._option.add_experimental_option("detach", True)
-        self._option.add_argument('--headless')
+        self._option.add_experimental_option("detach", True)
+        # self._option.add_argument('--headless')
 
     def _test_setup(self):
         return super(_TestCrawler, self)._setup()
@@ -187,3 +186,9 @@ class TaskPipeline(object):
 if __name__ == '__main__':
     fire.Fire(TaskPipeline)
 
+    def sun(j,n):
+        while n>=0:
+            j += j * 0.1
+            n -= 1
+            print(j // 1,end=' ')
+    sun(10000,12*10)

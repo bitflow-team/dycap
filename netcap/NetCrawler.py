@@ -6,8 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common import *
 from time import sleep as sp
+import json
+import config
 from DataIo import Txt
-import config, json
 
 errors = [NoSuchElementException, ElementNotInteractableException]
 
@@ -16,7 +17,7 @@ class _Crawler:
     def __init__(self):
         # 配置
         self._option = webdriver.ChromeOptions()
-        self._service = webdriver.ChromeService(service_args=['--append-log', '--readable-timestamp'],log_output = config.SELENIUM_CONFIG['log_output'].as_posix())
+        self._service = webdriver.ChromeService(service_args=['--append-log', '--readable-timestamp'], log_output = config.SELENIUM_CONFIG['log_output'].as_posix())
 
         self._option.set_capability('goog:loggingPrefs', config.SELENIUM_CONFIG['cap'])
         for i in config.SELENIUM_CONFIG['options']:
@@ -39,7 +40,7 @@ class DyCrawler(_Crawler):
         self._ti = ti
         '''设置暂停时间'''
         # self._option.add_experimental_option("detach", True)
-        self._option.add_argument('--headless')
+        # self._option.add_argument('--headless')
 
     def _setup(self):
         return super(DyCrawler, self)._setup()
