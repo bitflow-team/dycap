@@ -1,5 +1,5 @@
 # TODO 文件数据 数据 内存与磁盘的相互转换
-from config import RUNNING_CONFIG_KEYS,RUNNING_CONFIG_URLS
+from .config import RUNNING_CONFIG_KEYS,RUNNING_CONFIG_URLS
 
 
 class Txt:

@@ -1,6 +1,6 @@
 # TODO 项目配置 数据 质变的初始
 # from pathlib import Path
-from init import *
+from .init import *
 import os
 
 # 公共目录

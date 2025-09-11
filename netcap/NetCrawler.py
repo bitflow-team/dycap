@@ -7,8 +7,8 @@ from selenium import webdriver
 from selenium.common import *
 from time import sleep as sp
 import json
-import config
-from DataIo import Txt
+from . import config
+from .DataIo import Txt
 
 errors = [NoSuchElementException, ElementNotInteractableException]
 
