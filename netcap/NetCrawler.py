@@ -8,7 +8,9 @@ from selenium.common import *
 from time import sleep as sp
 import json
 from . import config
-from .DataIo import Txt
+from .DataIo import Txt, DyXlsx
+from pprint import pprint
+
 
 errors = [NoSuchElementException, ElementNotInteractableException]
 
@@ -54,7 +56,13 @@ class DyCrawler(_Crawler):
             return False
 
     @staticmethod
-    def _get_network_log(drivers, logs: [{}]):
+    def _get_network_log(drivers, logs: [{}])->list:
+        """
+        获取网络日志中的粉丝关注列表
+        :param drivers:
+        :param logs:
+        :return: list
+        """
         fans_list = []
         for l in logs:
             nw = json.loads(l.get('message')).get('message')
@@ -71,7 +79,7 @@ class DyCrawler(_Crawler):
                     fans_list += json.loads(response_body["body"])["followings"]
         return fans_list
 
-    def fans_activation(self) -> list:
+    def dy_activation(self) -> list:
         """
         抓取粉丝关注列表
 
@@ -81,13 +89,7 @@ class DyCrawler(_Crawler):
             筛选关键词：running/keys.txt
 
             完成采集的主页链接：running/complete_urls.txt
-
-        约定出口文件：
-            经关键词筛选后未采集的主页链接：output/urls.txt
-
-            输出采集结果：output/result.xlsx
-
-        :return:list
+        :return:list 粉丝关注列表详细信息，还需进一步处理
         """
         test_temp = []
 
@@ -126,7 +128,39 @@ class DyCrawler(_Crawler):
         return test_temp
 
 
-if __name__ == "__main__":
-    dy = DyCrawler()
-    log = dy.fans_activation()
-    print(log)
+    def dy_setup(self):
+        log = self.ff_activation()
+        fans_list = []
+        for i in log:
+            if i['account_cert_info'] is None:
+                is_biz_account = True
+            else:
+                is_biz_account = False
+            # user_info = [i['nickname'], i['uid'], i['signature'], "https://www.douyin.com/user/" + i['sec_uid'],
+            #              i['unique_id'], is_biz_account, i['follower_count'], i['following_count']]
+
+            user_info = {"nickname": i['nickname'],
+                         "uid": i['uid'],
+                         "signature": i['signature'],
+                         "sec_uid": "https://www.douyin.com/user/" + i['sec_uid'],
+                         "unique_id": i['unique_id'],
+                         "is_biz_account": is_biz_account,
+                         "follower_count": i['follower_count'],
+                         "following_count": i['following_count'],
+                         }
+            if user_info not in fans_list:
+                fans_list.append(user_info)
+
+        with open('./fans.json', 'w', encoding='utf-8') as f:
+            json.dump(fans_list, f, ensure_ascii=False)
+
+    @staticmethod
+    def test():
+        x = DyXlsx()
+        x.test()
+
+
+
+
+
+

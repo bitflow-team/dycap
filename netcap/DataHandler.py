@@ -12,7 +12,8 @@ class DyHandler(Handler):
     def __init__(self):
         super().__init__()
 
-    def handler_fans(driver,log):
+    @staticmethod
+    def handler_fans(driver,log)->list[dict]:
         fans_list = []
         for i in log:
             logjson = json.loads(i['message'])['message']

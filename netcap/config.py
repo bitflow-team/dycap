@@ -1,4 +1,4 @@
-# TODO 项目配置 数据 质变的初始
+# TODO 项目配置 数据
 # from pathlib import Path
 from .init import *
 import os
@@ -8,7 +8,14 @@ BASE_DIR = Path(__file__).resolve().parent
 
 SOURCE_DIR = BASE_DIR / 'source'
 CHROME_CACHED_DIR = SOURCE_DIR / 'cached_google'
-DATABASE_DIR = SOURCE_DIR / 'db'
+
+# 出口文件 output/*.xlsx output/urls.txt
+OUTPUT_DIR = BASE_DIR / 'output'
+if not os.path.exists(OUTPUT_DIR):
+    os.mkdir(OUTPUT_DIR.as_posix())
+DATABASE_DIR = OUTPUT_DIR / 'db'
+if not os.path.exists(DATABASE_DIR):
+    os.mkdir(DATABASE_DIR.as_posix())
 
 ## 资源文件
 if not os.path.exists(SOURCE_DIR):
@@ -31,10 +38,7 @@ if not os.path.isfile(RUNNING_CONFIG_KEYS.as_posix()):
     with open(RUNNING_CONFIG_KEYS.as_posix(), 'w') as f:
         pass
 
-## 出口文件 output/*.xlsx output/urls.txt
-OUTPUT_DIR = BASE_DIR / 'output'
-if not os.path.isdir(OUTPUT_DIR):
-    os.mkdir(OUTPUT_DIR.as_posix())
+
 
 if os.name == 'nt':
     CHROME_ = SOURCE_DIR / 'chrome/chrome.exe'
