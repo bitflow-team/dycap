@@ -6,13 +6,13 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common import *
 from time import sleep as sp
-import json
+import json,inspect,sys
 from . import config
 from .DataIo import Txt, DyXlsx
 from pprint import pprint
 
 
-errors = [NoSuchElementException, ElementNotInteractableException]
+_errors = [NoSuchElementException, ElementNotInteractableException]
 
 
 class _Crawler:
@@ -101,7 +101,7 @@ class DyCrawler(_Crawler):
             while self._click_login(_driver):
                 print('请登录')
                 sp(self._ti)
-            wait = WebDriverWait(_driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
+            wait = WebDriverWait(_driver, timeout=2, poll_frequency=.2, ignored_exceptions=_errors)
             wait.until(lambda d: _driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
             box2 = [i for i in _driver.find_elements(By.CLASS_NAME, 'C1cxu0Vq')[:2] if i.text != '0']
             for i in box2:
@@ -165,4 +165,17 @@ class DyCrawler(_Crawler):
 
 
 
-
+def _get_exposed_objects():
+    """自动过滤模块中导入的包，只保留自定义的函数和类"""
+    current_module = sys.modules[__name__]  # 获取当前模块
+    exposed = {}
+    for name, obj in inspect.getmembers(current_module):
+        # 过滤条件：
+        # 1. 排除以下划线开头的私有对象（如 __name__、__file__）
+        # 2. 排除导入的模块/包（通过检查对象是否定义在当前模块）
+        if (
+            not name.startswith("_") and
+            inspect.getmodule(obj) == current_module  # 仅保留当前模块定义的对象
+        ):
+            exposed[name] = obj
+    return exposed
