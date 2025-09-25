@@ -129,7 +129,7 @@ class DyCrawler(_Crawler):
 
 
     def dy_setup(self):
-        log = self.ff_activation()
+        log = self.dy_activation()
         fans_list = []
         for i in log:
             if i['account_cert_info'] is None:
@@ -151,15 +151,25 @@ class DyCrawler(_Crawler):
             if user_info not in fans_list:
                 fans_list.append(user_info)
 
-        with open('./fans.json', 'w', encoding='utf-8') as f:
-            json.dump(fans_list, f, ensure_ascii=False)
+        return fans_list
 
-    @staticmethod
-    def test():
+
+    def dy_fans_1(self):
+        """
+            抖音粉丝列表
+            保存数据到 OUTPUT \ dy.xlsx
+        :return:
+        """
         x = DyXlsx()
-        x.test()
+        x.write_dict_list_to_excel(self.dy_setup())
 
 
+    def dy_fans_2(self):
+        """
+            抖音粉丝列表
+            保存数据到 OUTPUT \ dy.xlsx
+        :return:
+        """
 
 
 
