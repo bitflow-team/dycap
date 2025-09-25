@@ -79,7 +79,7 @@ class DyCrawler(_Crawler):
                     fans_list += json.loads(response_body["body"])["followings"]
         return fans_list
 
-    def dy_activation(self) -> list:
+    def _dy_activation(self) -> list:
         """
         抓取粉丝关注列表
 
@@ -128,8 +128,8 @@ class DyCrawler(_Crawler):
         return test_temp
 
 
-    def dy_setup(self):
-        log = self.dy_activation()
+    def _dy_setup(self):
+        log = self._dy_activation()
         fans_list = []
         for i in log:
             if i['account_cert_info'] is None:
@@ -156,20 +156,12 @@ class DyCrawler(_Crawler):
 
     def dy_fans_1(self):
         """
-            抖音粉丝列表
-            保存数据到 OUTPUT \ dy.xlsx
+            抓取抖音粉丝列表
+            保存数据到 OUTPUT \\ dy.xlsx
         :return:
         """
         x = DyXlsx()
-        x.write_dict_list_to_excel(self.dy_setup())
-
-
-    def dy_fans_2(self):
-        """
-            抖音粉丝列表
-            保存数据到 OUTPUT \ dy.xlsx
-        :return:
-        """
+        x.write_dict_list_to_excel(self._dy_setup())
 
 
 
