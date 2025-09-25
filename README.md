@@ -6,8 +6,7 @@
 
 ## 使用说明
 ```bash
-# 粉丝关注列表抓取
-python start.py fans_activation -t 2
+python start.py
 ```
 
 
