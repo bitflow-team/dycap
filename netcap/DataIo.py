@@ -145,6 +145,7 @@ class DyXlsx(_Xlsx):
         self._wb.save(self.xlsx_file)
 
     def get(self,data):
+        # TODO 此方法需要日后实现
         pass
 
     @staticmethod
@@ -155,8 +156,9 @@ class DyXlsx(_Xlsx):
 
 class Db(_DataIo):
     def __init__(self):
+        super().__init__()
         self._db_file = DATABASE_DIR.as_posix()
-        pass
+
 
 class DyDB(Db):
     def __init__(self):
