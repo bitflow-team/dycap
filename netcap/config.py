@@ -1,7 +1,5 @@
 # TODO 项目配置 数据
 # from pathlib import Path
-import sys
-
 from .init import *
 import os
 
@@ -42,7 +40,7 @@ if not os.path.isfile(RUNNING_CONFIG_KEYS.as_posix()):
 
 
 
-if sys.platform == 'windows':
+if os.name == 'nt':
     CHROME_ = SOURCE_DIR / 'chrome/chrome.exe'
     CHROMEDRIVER_ = SOURCE_DIR / 'chromedriver/chromedriver.exe'
 else:
